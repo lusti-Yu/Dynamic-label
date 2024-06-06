@@ -39,8 +39,9 @@ def dynat_loss(model, model_teacher,
                 # loss_kl = criterion_kl(F.log_softmax(model(x_adv), dim=1),
                 #                        F.softmax(model(x_natural), dim=1)) # trades inner optimzation
                 out = model_teacher(x_natural)
+                out_adv=model(x_adv)
                 train_label = out.argmax(dim=1)
-                loss_kl = ce(x_adv,train_label) # our inner optimzation
+                loss_kl = ce(out_adv,train_label) # our inner optimzation
             grad = torch.autograd.grad(loss_kl, [x_adv])[0]
             x_adv = x_adv.detach() + step_size * torch.sign(grad.detach())
             x_adv = torch.min(torch.max(x_adv, x_natural - epsilon), x_natural + epsilon)
